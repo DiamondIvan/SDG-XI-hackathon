@@ -124,8 +124,8 @@ function GreenRouteDemo() {
 
       <div style={{ display: 'flex', marginTop: '20px' }}>
         <div style={{ flex: 1, height: '500px', marginRight: '20px' }}>
-          {selectedRoute ? (
-            <MapComponent route={selectedRoute} />
+          {routes.length > 0 ? ( // Check if there are any routes to display
+            <MapComponent routes={routes} selectedRoute={selectedRoute} />
           ) : (
             <div style={{ textAlign: 'center', paddingTop: '50px' }}>Map will appear here after fetching a route</div>
           )}

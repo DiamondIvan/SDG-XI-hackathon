@@ -11,15 +11,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-const MapComponent = ({ route }) => {
-  if (!route || !route.coordinates || route.coordinates.length === 0) {
+const MapComponent = ({ routes, selectedRoute }) => {
+  if (!routes || routes.length === 0) {
     return <div style={{ textAlign: 'center', paddingTop: '50px' }}>Map will appear here after fetching a route</div>;
   }
 
-  const routeCoordinates = route.coordinates.map(coord => [coord.lat, coord.lng]);
-  const center = routeCoordinates[0];
-  const lineColor = route.color === 'green' ? 'green' : 'red'; // Use route.color, default to red
-  console.log("MapComponent received route.color:", route.color, "resulting lineColor:", lineColor);
+  // Use the coordinates of the selected route for centering, or the first route if none selected
+  const centerRoute = selectedRoute || routes[0];
+  const center = centerRoute.coordinates[0];
 
   return (
     <MapContainer center={center} zoom={10} style={{ height: '100%', width: '100%' }}>
@@ -27,16 +26,38 @@ const MapComponent = ({ route }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; OpenStreetMap contributors"
       />
-      <Marker position={routeCoordinates[0]}><Popup>Origin</Popup></Marker>
-      <Marker position={routeCoordinates[routeCoordinates.length - 1]}><Popup>Destination</Popup></Marker>
       
-      {route.waypoints && route.waypoints.map((waypoint, index) => (
-        <Marker key={index} position={[waypoint.lat, waypoint.lng]}>
-          <Popup>Stop {index + 1}</Popup>
-        </Marker>
-      ))}
+      {routes.map((route, index) => {
+        const routeCoordinates = route.coordinates.map(coord => [coord.lat, coord.lng]);
+        // Determine line color: green for selected green route, red for selected red route, grey for unselected routes
+        const lineColor = (selectedRoute && selectedRoute.routeNumber === route.routeNumber)
+                          ? (route.color === 'green' ? 'green' : 'red')
+                          : 'grey'; // Default to grey for unselected routes
+        const weight = (selectedRoute && selectedRoute.routeNumber === route.routeNumber) ? 5 : 3; // Thicker for selected route
 
-      <Polyline positions={routeCoordinates} color={lineColor} />
+        return (
+          <Polyline 
+            key={route.routeNumber} 
+            positions={routeCoordinates} 
+            color={lineColor} 
+            weight={weight} 
+            opacity={0.7}
+          />
+        );
+      })}
+
+      {selectedRoute && (
+        <>
+          <Marker position={selectedRoute.coordinates[0]}><Popup>Origin</Popup></Marker>
+          <Marker position={selectedRoute.coordinates[selectedRoute.coordinates.length - 1]}><Popup>Destination</Popup></Marker>
+          
+          {selectedRoute.waypoints && selectedRoute.waypoints.map((waypoint, index) => (
+            <Marker key={index} position={[waypoint.lat, waypoint.lng]}>
+              <Popup>Stop {index + 1}</Popup>
+            </Marker>
+          ))}
+        </>
+      )}
     </MapContainer>
   );
 };
