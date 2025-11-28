@@ -43,13 +43,17 @@
 
 .menu {
   display: flex;
-  gap: 1rem;
+  gap: 3rem;
   align-items: center;
 }
 
 .menu a {
   color: white;
   text-decoration: none;
+  margin: 0 1rem;
+  font-size: 1.4rem;
+  font-family: "Comic Sans MS", sans-serif;
+  font-weight: bold;
 }
 
 .backend-message {
