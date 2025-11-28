@@ -7,6 +7,9 @@ public class RouteResponse {
     private String distance;
     private String duration;
     private String fuelUsed;
+    private String fuelSavingPrediction; // New field for AI prediction
+    private int routeNumber;             // New field for route identification
+    private String color;                // New field for route efficiency color
     private List<LatLng> coordinates;
     private List<LatLng> waypoints;
 
@@ -60,6 +63,30 @@ public class RouteResponse {
 
     public void setFuelUsed(String fuelUsed) {
         this.fuelUsed = fuelUsed;
+    }
+
+    public String getFuelSavingPrediction() {
+        return fuelSavingPrediction;
+    }
+
+    public void setFuelSavingPrediction(String fuelSavingPrediction) {
+        this.fuelSavingPrediction = fuelSavingPrediction;
+    }
+
+    public int getRouteNumber() {
+        return routeNumber;
+    }
+
+    public void setRouteNumber(int routeNumber) {
+        this.routeNumber = routeNumber;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public List<LatLng> getCoordinates() {

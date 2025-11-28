@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import MapComponent from './MapComponent';
 import AutocompleteInput from './AutocompleteInput';
-import EnvironmentalImpactDisplay from './EnvironmentalImpactDisplay'; // Import the new component
 
 function GreenRouteDemo() {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [stops, setStops] = useState(['']);
-  const [result, setResult] = useState(null);
+  const [routes, setRoutes] = useState([]); // Changed from 'result' to 'routes'
+  const [selectedRoute, setSelectedRoute] = useState(null); // New state for selected route
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [mapCenterLatitude, setMapCenterLatitude] = useState(34.0522); // Default to a central point
-  const [mapCenterLongitude, setMapCenterLongitude] = useState(-118.2437); // Default to a central point
 
   const handleStopChange = (index, value) => {
     const newStops = [...stops];
@@ -42,7 +40,8 @@ function GreenRouteDemo() {
 
   const handleClick = () => {
     setLoading(true);
-    setResult(null);
+    setRoutes([]); // Clear previous routes
+    setSelectedRoute(null); // Clear selected route
     setError('');
 
     const waypoints = stops.filter(stop => stop.trim() !== '').join('|');
@@ -54,26 +53,31 @@ function GreenRouteDemo() {
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        if (data.content.startsWith('Error') || data.content.startsWith('No routes')) {
-          setError(data.content);
-          setResult(null);
+        console.log("Data received from backend:", data); // Add this line
+        if (data && Array.isArray(data) && data.length > 0) {
+            // Check if it's an error message disguised as a single-element array
+            if (data.length === 1 && data[0].content && data[0].content.startsWith('Error')) {
+                setError(data[0].content);
+                setRoutes([]);
+                setSelectedRoute(null);
+            } else {
+                setRoutes(data);
+                setSelectedRoute(data[0]); // Select the first route by default
+            }
         } else {
-          setResult(data);
+            setError('No routes found or unexpected data format.');
+            setRoutes([]);
+            setSelectedRoute(null);
         }
       })
       .catch(() => setError('Error fetching data. Is the backend running?'))
       .finally(() => setLoading(false));
   };
 
-  const handleMapMove = (lat, lng) => {
-    setMapCenterLatitude(lat);
-    setMapCenterLongitude(lng);
-  };
-
   return (
     <div style={{ padding: '20px' }}>
       <h2>Green Route Demo</h2>
-      <p>Find the shortest route by distance to save fuel.</p>
+      <p>Find the shortest route by distance to save fuel and get AI predictions.</p>
 
       <div>
         <label>Origin:</label>
@@ -106,31 +110,72 @@ function GreenRouteDemo() {
       </div>
 
       <button onClick={handleClick} disabled={loading} style={{ marginTop: '20px' }}>
-        {loading ? 'Finding Route...' : 'Get Green Route'}
+        {loading ? 'Finding Route...' : 'Get Green Routes'}
       </button>
 
       {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
 
-      <div style={{ height: '500px', width: '100%', marginTop: '20px' }}>
-        <MapComponent route={result} onMapMove={handleMapMove} />
+      <div style={{ display: 'flex', marginTop: '20px' }}>
+        <div style={{ flex: 1, height: '500px', marginRight: '20px' }}>
+          {selectedRoute ? (
+            <MapComponent route={selectedRoute} />
+          ) : (
+            <div style={{ textAlign: 'center', paddingTop: '50px' }}>Map will appear here after fetching a route</div>
+          )}
+        </div>
+
+        {routes.length > 0 && (
+          <div style={{ flex: 1, maxHeight: '500px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
+            <h3>Alternative Routes:</h3>
+            {routes.map(route => (
+              <div 
+                key={route.routeNumber} 
+                style={{ 
+                  padding: '10px', 
+                  marginBottom: '10px', 
+                  border: '1px solid #eee', 
+                  cursor: 'pointer',
+                  backgroundColor: selectedRoute && selectedRoute.routeNumber === route.routeNumber ? '#e6f7ff' : 'white'
+                }}
+                onClick={() => setSelectedRoute(route)}
+              >
+                <h4>
+                  Route {route.routeNumber}: {route.content} 
+                  {route.color && (
+                    <span 
+                      style={{ 
+                        marginLeft: '10px', 
+                        height: '12px', 
+                        width: '12px', 
+                        backgroundColor: route.color, 
+                        borderRadius: '50%', 
+                        display: 'inline-block' 
+                      }}
+                      title={`Efficiency: ${route.color}`}
+                    ></span>
+                  )}
+                </h4>
+                <p><strong>Distance:</strong> {route.distance}</p>
+                <p><strong>Duration:</strong> {route.duration}</p>
+                <p><strong>Fuel Used:</strong> {route.fuelUsed}</p>
+                <p><strong>AI Prediction:</strong> {route.fuelSavingPrediction}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {result && (
+      {selectedRoute && (
         <div style={{ marginTop: '20px' }}>
-          <h3>Best Route Found:</h3>
-          <p><strong>Route:</strong> {result.content}</p>
-          <p><strong>Distance:</strong> {result.distance}</p>
-          <p><strong>Duration:</strong> {result.duration}</p>
-          <p><strong>Fuel Used:</strong> {result.fuelUsed}</p>
+          <h3>Selected Route Details:</h3>
+          <p><strong>Route:</strong> {selectedRoute.content}</p>
+          <p><strong>Distance:</strong> {selectedRoute.distance}</p>
+          <p><strong>Duration:</strong> {selectedRoute.duration}</p>
+          <p><strong>Fuel Used:</strong> {selectedRoute.fuelUsed}</p>
+          <p><strong>AI Prediction:</strong> {selectedRoute.fuelSavingPrediction}</p>
+          <p><strong>Efficiency Color:</strong> <span style={{ color: selectedRoute.color, fontWeight: 'bold' }}>{selectedRoute.color ? selectedRoute.color.toUpperCase() : 'N/A'}</span></p>
         </div>
       )}
-
-      <EnvironmentalImpactDisplay
-        latitude={mapCenterLatitude}
-        longitude={mapCenterLongitude}
-        distance={result ? result.distance : 0} // Use actual distance from result
-        transportationMode={"car"} // Placeholder, ideally this would be user selected or derived
-      />
     </div>
   );
 }

@@ -33,21 +33,23 @@ public class AIModelService {
 
     try {
       // Gemini AI REST endpoint
-      String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+      String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
 
       // Build JSON payload
       String payload = """
           {
-            "prompt": [{"text": "%s"}],
-            "temperature": 0.7,
-            "maxOutputTokens": 256
+            "contents": [{"parts": [{"text": "%s"}]}],
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 256
+            }
           }
           """.formatted(userMessage);
 
       // Set headers
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
-      headers.setBearerAuth(apiKey);
+      // Removed setBearerAuth, as API key is now in the URL
 
       HttpEntity<String> entity = new HttpEntity<>(payload, headers);
 

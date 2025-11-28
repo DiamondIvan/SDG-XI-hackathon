@@ -1,8 +1,6 @@
 package com.example.backend.route;
 
-import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +14,11 @@ public class RouteController {
     @Autowired
     private DirectionsService directionsService;
 
+    @Autowired
+    private AIGreenRouteService aiGreenRouteService;
+
     @GetMapping
-    public RouteResponse getRoute(
+    public List<RouteResponse> getRoute(
             @RequestParam String origin,
             @RequestParam String destination,
             @RequestParam(required = false) String waypoints
@@ -26,56 +27,23 @@ public class RouteController {
             String[] waypointArray = (waypoints != null && !waypoints.isEmpty()) ? waypoints.split("\\|") : new String[0];
             DirectionsResult directions = directionsService.getDirections(origin, destination, waypointArray);
 
-            if (directions.routes.length == 0) {
+            if (directions == null || directions.routes == null || directions.routes.length == 0) {
+                List<RouteResponse> errorResponses = new ArrayList<>();
                 RouteResponse error = new RouteResponse();
-                error.setContent("No routes found");
-                return error;
+                error.setContent("Error: No routes found or unexpected data format.");
+                errorResponses.add(error);
+                return errorResponses;
             }
 
-            var route = directions.routes[0]; // first route
-            List<RouteResponse.LatLng> coords = new ArrayList<>();
-            for (DirectionsLeg leg : route.legs) {
-                for (DirectionsStep step : leg.steps) {
-                    List<com.google.maps.model.LatLng> path = step.polyline.decodePath();
-                    for (com.google.maps.model.LatLng point : path) {
-                        coords.add(new RouteResponse.LatLng(point.lat, point.lng));
-                    }
-                }
-            }
-
-            List<RouteResponse.LatLng> waypointCoords = new ArrayList<>();
-            if (route.legs.length > 1) {
-                for (int i = 0; i < route.legs.length - 1; i++) {
-                    DirectionsLeg leg = route.legs[i];
-                    waypointCoords.add(new RouteResponse.LatLng(leg.endLocation.lat, leg.endLocation.lng));
-                }
-            }
-
-            long totalDistance = 0;
-            long totalDuration = 0;
-            for (DirectionsLeg leg : route.legs) {
-                totalDistance += leg.distance.inMeters;
-                totalDuration += leg.duration.inSeconds;
-            }
-
-            long hours = totalDuration / 3600;
-            long minutes = (totalDuration % 3600) / 60;
-            String readableDuration = String.format("%d hours %d mins", hours, minutes);
-
-            RouteResponse response = new RouteResponse();
-            response.setContent("Route via " + route.summary);
-            response.setDistance(String.format("%.2f km", totalDistance / 1000.0));
-            response.setDuration(readableDuration);
-            response.setFuelUsed("Estimated fuel: " + Math.round(totalDistance / 1000 * 0.07) + " L");
-            response.setCoordinates(coords);
-            response.setWaypoints(waypointCoords);
-
-            return response;
+            return aiGreenRouteService.processRoutes(directions);
 
         } catch (Exception e) {
+            List<RouteResponse> errorResponses = new ArrayList<>();
             RouteResponse error = new RouteResponse();
-            error.setContent("Error fetching directions: " + e.getMessage());
-            return error;
+            error.setContent("Error: " + e.getMessage());
+            errorResponses.add(error);
+            e.printStackTrace(); // Log the exception for debugging
+            return errorResponses;
         }
     }
 }
