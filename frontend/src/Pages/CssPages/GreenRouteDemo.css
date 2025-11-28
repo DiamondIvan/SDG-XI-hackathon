@@ -1,0 +1,244 @@
+/* Container and typography */
+.style {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.font {
+  font-size: 52px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.desc {
+  font-size: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+  max-width: 700px;
+  color: #555;
+}
+
+/* Input card containers */
+.origin,
+.destination,
+.stops-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* Card style for input boxes */
+.input-card {
+  background: linear-gradient(135deg, #d0f0fd 0%, #e0f7fa 100%);
+  border-radius: 12px;
+  padding: 20px 25px; /* increase padding for bigger box */
+  margin-bottom: 15px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15); /* slightly bigger shadow */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.input-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* Text inputs inside cards */
+.input-card input[type="text"] {
+  padding: 15px 18px; /* larger input padding */
+  font-size: 18px; /* bigger text */
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-card input[type="text"]::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.input-card input[type="text"]:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.4);
+}
+
+/* Buttons */
+button {
+  padding: 14px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.2s;
+  font-weight: 600;
+}
+
+button:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.reverse-button button {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.reverse-button button:hover {
+  background-color: #2980b9;
+}
+
+.stops-container button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.stops-container button:hover {
+  background-color: #c0392b;
+}
+
+/* Main action button */
+button[disabled] {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+button:not([disabled]) {
+  background-color: #2ecc71;
+  color: white;
+}
+
+button:not([disabled]):hover {
+  background-color: #27ae60;
+}
+
+/* Map and routes layout */
+.map-routes-container {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 30px;
+  gap: 25px;
+}
+
+.map-container {
+  flex: 1;
+  height: 520px;
+  border-radius: 12px;
+  background-color: #e8f5e9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.map-container:hover {
+  transform: scale(1.01);
+}
+
+.routes-list {
+  flex: 1;
+  max-height: 520px;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+}
+
+.routes-list h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 22px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+/* Route card */
+.routes-list div {
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.2s;
+}
+
+.routes-list div:hover {
+  background-color: #f0f8ff;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Selected route highlight */
+.routes-list .selected {
+  background-color: #d0f0fd;
+  border-color: #91d5ff;
+}
+
+/* Selected route details */
+.selected-route-details {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.selected-route-details h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.selected-route-details p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+/* Error message */
+.error-message {
+  color: #e74c3c;
+  font-weight: 600;
+  margin-top: 15px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+  .map-routes-container {
+    flex-direction: column;
+  }
+
+  .map-container,
+  .routes-list {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .font {
+    font-size: 38px;
+  }
+  .desc {
+    font-size: 18px;
+  }
+}
