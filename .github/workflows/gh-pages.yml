@@ -34,7 +34,7 @@ jobs:
             - name: Upload artifact <img draggable="false" role="img" class="emoji" alt="🔼" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f53c.svg">
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: "./frontend/dist"
+                  path: "./frontend/build"
  
             - name: Deploy to GitHub Pages <img draggable="false" role="img" class="emoji" alt="🚀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f680.svg">
               id: deployment
