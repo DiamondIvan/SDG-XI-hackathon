@@ -17,6 +17,26 @@ function GreenRouteDemo() {
     return text.length <= maxLength ? text : text.substring(0, maxLength) + '...';
   };
 
+  const generateWazeUrl = (route) => {
+    if (!route || !route.coordinates || route.coordinates.length === 0) return '';
+    const destinationLatLng = route.coordinates[route.coordinates.length - 1];
+    return `waze://?ll=${destinationLatLng.lat},${destinationLatLng.lng}&navigate=yes`;
+  };
+
+  const generateGoogleMapsUrl = (route) => {
+    if (!route || !route.coordinates || route.coordinates.length === 0) return '';
+
+    const originLatLng = route.coordinates[0];
+    const destinationLatLng = route.coordinates[route.coordinates.length - 1];
+
+    let waypointsParam = '';
+    if (route.waypoints && route.waypoints.length > 0) {
+      waypointsParam = '&waypoints=' + route.waypoints.map(wp => `${wp.lat},${wp.lng}`).join('|');
+    }
+
+    return `https://www.google.com/maps/dir/?api=1&origin=${originLatLng.lat},${originLatLng.lng}&destination=${destinationLatLng.lat},${destinationLatLng.lng}${waypointsParam}`;
+  };
+
   const handleStopChange = (index, value) => {
     const newStops = [...stops];
     newStops[index] = value;
@@ -175,6 +195,10 @@ function GreenRouteDemo() {
           <p><strong>Fuel Used:</strong> {selectedRoute.fuelUsed}</p>
           <p><strong>AI Prediction:</strong> {truncateText(selectedRoute.fuelSavingPrediction, 250)}</p>
           <p><strong>Efficiency Color:</strong> <span style={{ color: selectedRoute.color, fontWeight: 'bold' }}>{selectedRoute.color ? selectedRoute.color.toUpperCase() : 'N/A'}</span></p>
+          <div className='navigation-buttons'>
+            <button onClick={() => window.open(generateWazeUrl(selectedRoute), '_blank')} disabled={!selectedRoute}>Open in Waze</button>
+            <button onClick={() => window.open(generateGoogleMapsUrl(selectedRoute), '_blank')} disabled={!selectedRoute}>Open in Google Maps</button>
+          </div>
         </div>
       )}
     </div>
