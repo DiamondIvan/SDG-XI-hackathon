@@ -6,7 +6,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = "http://localhost:3000") // change if frontend runs elsewhere
+@CrossOrigin(origins = { "http://localhost:3000", "https://sdghackathon-frontend.vercel.app" }) // change if frontend
+                                                                                                // runs elsewhere
 public class ChatController {
 
     @Autowired

@@ -14,7 +14,7 @@ import java.util.Map;
 public class CO2Controller {
 
     // Allow CORS for frontend running on another port
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = { "http://localhost:3000", "https://sdghackathon-frontend.vercel.app" })
     @PostMapping("/calculate-co2")
     public Map<String, Double> calculateCO2(@RequestBody CO2Request request) {
         double emissionFactor = getEmissionFactor(request.getTransportType());
