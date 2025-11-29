@@ -63,7 +63,7 @@ function GreenRouteDemo() {
 
     const waypoints = stops.filter(s => s.trim() !== '').join('|');
 
-    let url = `http://localhost:8080/route?origin=${origin}&destination=${destination}`;
+    let url = `https://sdghackathon-1-173683223586.asia-southeast1.run.app/route?origin=${origin}&destination=${destination}`;
     if (waypoints) url += `&waypoints=${waypoints}`;
 
     fetch(url)
