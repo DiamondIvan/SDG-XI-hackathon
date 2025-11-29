@@ -1,11 +1,13 @@
 # 1. Build Stage
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# We update the tag to use Java 25
+FROM maven:3-eclipse-temurin-25 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # 2. Run Stage
-FROM eclipse-temurin:17-jdk-alpine
+# We also update the runner to Java 25
+FROM eclipse-temurin:25-jdk
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
