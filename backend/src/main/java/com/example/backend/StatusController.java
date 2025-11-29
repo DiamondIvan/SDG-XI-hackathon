@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // 1. Tells Spring this class handles web requests (REST endpoints)
-@CrossOrigin(origins = "http://localhost:3000") // Allow requests from the frontend
 @RestController
 public class StatusController {
 
